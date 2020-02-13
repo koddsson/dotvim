@@ -28,7 +28,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'neovim/node-host', { 'do': 'npm install -g neovim' }
 
 " Linting and formatting
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 
 " Solarized
 Plug 'altercation/vim-colors-solarized'
