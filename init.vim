@@ -43,6 +43,9 @@ Plug 'tpope/vim-surround'
 " For repeating plugin commands
 Plug 'tpope/vim-repeat'
 
+" `g c` to comment and uncomment lines
+Plug 'tpope/vim-commentary'
+
 " To make emojis render correctly
 Plug 'junegunn/vim-emoji'
 
@@ -66,9 +69,6 @@ Plug 'junegunn/goyo.vim'
 
 " Like it says on the tin, markdown preview.
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm install'  }
-
-" `g c` to comment and uncomment lines
-Plug 'tpope/vim-commentary'
 
 " Initialize plugin system
 call plug#end()
