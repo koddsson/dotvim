@@ -86,13 +86,13 @@ set number
 " Set ALE linters and fixes.
 let g:ale_linters = {
 \   'ruby': ['rubocop', 'trim_whitespace'],
-\   'typescript': ['eslint', 'prettier', 'prettier-eslint', 'standard'],
-\   'javascript': ['eslint', 'flow', 'prettier', 'prettier-eslint', 'standard'],
+\   'typescript': ['eslint', 'prettier', 'prettier-eslint'],
+\   'javascript': ['eslint', 'flow', 'prettier', 'prettier-eslint'],
 \}
 let g:ale_fixers = {
 \   'ruby': ['rubocop', 'trim_whitespace'],
-\   'typescript': ['eslint', 'prettier', 'prettier-eslint', 'standard'],
-\   'javascript': ['eslint', 'prettier', 'prettier-eslint', 'standard'],
+\   'typescript': ['eslint', 'prettier', 'prettier-eslint'],
+\   'javascript': ['eslint', 'prettier', 'prettier-eslint'],
 \}
 let g:ale_linter_aliases = {
 \   'typescript': ['javascript']
