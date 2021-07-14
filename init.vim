@@ -1,11 +1,13 @@
 " Set leader key to `,`
 let mapleader = ","
 
-" Open the fuzzy finder with ,p
-map <leader>p :FZF<CR>
+" Open the fuzzy finder with ,p (only tracked git files)
+map <leader>p :GFiles<CR>
+" Open the fuzzy finder with ,o (include files not tracked in git)
+map <leader>o :Files<CR>
 
 " Open up notes with ,m
-map <leader>m :tabnew ~/.notes.txt<CR>
+map <leader>m :Files ~/notes/<CR>
 
 " Don't know what this is.
 let g:fzf_buffers_jump = 1
@@ -20,6 +22,9 @@ call plug#begin('~/.vim/plugged')
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   " Both options are optional. You don't have to install fzf in ~/.fzf
   " and you don't have to run install script if you use fzf only in Vim.
+
+" for `:Ag`
+Plug 'junegunn/fzf.vim'
 
 " The cool line at the bottom
 Plug 'itchyny/lightline.vim'
@@ -54,21 +59,17 @@ Plug 'mklabs/split-term.vim'
 
 " Languages and syntaxes
 Plug 'leafgarland/typescript-vim'
-
-" Grepping
-Plug 'numkil/ag.nvim'
-
-" Dash integration
-Plug 'rizzatti/dash.vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'sheerun/vim-polyglot'
 
 " Dependency version info
 Plug 'meain/vim-package-info', { 'do': 'npm install' }
 
-" :Goyo for zen mode
-Plug 'junegunn/goyo.vim'
+" So that TypeScript is usable.
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Like it says on the tin, markdown preview.
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm install'  }
+" For YARDoc in Ruby
+Plug 'noprompt/vim-yardoc'
 
 " Initialize plugin system
 call plug#end()
@@ -85,20 +86,31 @@ set number
 
 " Set ALE linters and fixes.
 let g:ale_linters = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'erb': ['remove_trailing_lines', 'trim_whitespace'],
 \   'ruby': ['rubocop', 'trim_whitespace'],
-\   'typescript': ['eslint', 'prettier', 'prettier-eslint'],
+\   'typescript': ['eslint', 'tsserver', 'prettier', 'prettier-eslint'],
 \   'javascript': ['eslint', 'flow', 'prettier', 'prettier-eslint'],
+\   'css': ['stylelint', 'prettier'],
+\   'sass': ['stylelint', 'prettier'],
 \}
 let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace', 'prettier'],
 \   'ruby': ['rubocop', 'trim_whitespace'],
 \   'typescript': ['eslint', 'prettier', 'prettier-eslint'],
 \   'javascript': ['eslint', 'prettier', 'prettier-eslint'],
+\   'css': ['stylelint', 'prettier'],
+\   'sass': ['stylelint', 'prettier'],
 \}
 let g:ale_linter_aliases = {
 \   'typescript': ['javascript']
 \}
 
 let g:ale_fix_on_save = 1
+
+"TODO: Can I somehow conditionally enable this when I'm working in
+"`github/github`?
+"let g:ale_ruby_rubocop_executable = 'bin/rubocop'
 
 " I really don't know what this does
 filetype plugin indent on
@@ -121,8 +133,31 @@ autocmd BufReadPost *
 set clipboard=unnamedplus
 
 " Show full filename in lightline
-let g:lightline = {
-      \ 'component': {
-      \   'filename': '%F',
-      \ }
-      \ }
+let g:lightline = {'component': {'filename': '%F',}}
+
+" Make sure .cjs files are identified as js
+au BufNewFile,BufRead *.js,*.javascript,*.es,*.mjs,*.cjs   setf javascript
+
+" Use K to show COC documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Live substitution
+" http://vimcasts.org/episodes/neovim-eyecandy/#shownotes
+set inccommand=nosplit
+
+" Custom command to allow you to turn of fixer such as prettier.
+"
+" https://github.com/dense-analysis/ale/issues/1353
+command! ALEToggleFixer execute "let g:ale_fix_on_save = get(g:, 'ale_fix_on_save', 0) ? 0 : 1"
+
+" When in markdown, having selected some text, press Ctrl+K to have it wrapped
+" in [](). So `foo` becomes `[foo]()` with the cursor placed inbetween ()
+xmap <C-k> "zdi[<C-R>z]()<Left>
