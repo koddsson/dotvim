@@ -42,5 +42,14 @@ Plug 'junegunn/vim-emoji'
 -- Treesitter for syntax highlighting
 Plug('nvim-treesitter/nvim-treesitter', {['do'] = ':TSUpdate'})
 
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+
 -- Initialize plugin system
 vim.call('plug#end')
+
+vim.cmd('set completeopt=menu,menuone,noselect')
+
