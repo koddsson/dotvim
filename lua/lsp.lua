@@ -1,5 +1,6 @@
 -- Setup nvim-cmp.
-local cmp = require'cmp'
+local cmp = require('cmp')
+local nvim_lsp = require('lspconfig')
 
 cmp.setup({
   snippet = {
@@ -48,41 +49,107 @@ cmp.setup.cmdline(':', {
     { name = 'cmdline' }
   })
 })
+
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 -- Set up LSP servers
+local on_attach = function(client, bufnr)
+  client.resolved_capabilities.document_formatting = true
 
--- HTML
-require'lspconfig'.html.setup{
-  capabilities = capabilities
-}
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local opts = { noremap=true, silent=true }
 
--- CSS
-require'lspconfig'.cssls.setup{
-  capabilities = capabilities
-}
-require'lspconfig'.stylelint_lsp.setup{
-  capabilities = capabilities
-}
+  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+end
 
--- TypeScript and JavaScript
-require'lspconfig'.tsserver.setup{
-  capabilities = capabilities
-}
-require'lspconfig'.eslint.setup{
+local servers = { 'html', 'cssls', 'stylelint_lsp', 'eslint', 'solargraph' }
+for _, lsp in ipairs(servers) do
+  nvim_lsp[lsp].setup {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    flags = {
+      debounce_text_changes = 150,
+    }
+  }
+end
+
+nvim_lsp.tsserver.setup {
+  on_attach = on_attach,
+  root_dir = nvim_lsp.util.root_pattern("package.json"),
   capabilities = capabilities,
-  on_attach = function(client)
-    client.resolved_capabilities.document_formatting = true
-  end,
   flags = {
     debounce_text_changes = 150,
-  }
+  },
+  init_options = {
+    lint = true,
+  },
 }
 
--- TODO: I want deno only to be configured when we're in a deno project. Maybe
--- even turn off the tsserver one.
--- require'lspconfig'.denols.setup{
---   capabilities = capabilities
---   root_dir = root_pattern("mod.ts")
--- }
+nvim_lsp.denols.setup {
+  on_attach = on_attach,
+  root_dir = nvim_lsp.util.root_pattern(".deno"),
+  init_options = {
+    enabled = true,
+    lint = true,
+    unstable = true,
+  },
+}
+
+local on_attach = function(client)
+    require'completion'.on_attach(client)
+end
+
+nvim_lsp.rust_analyzer.setup({
+    on_attach=on_attach,
+    settings = {
+        ["rust-analyzer"] = {
+            assist = {
+                importGranularity = "module",
+                importPrefix = "by_self",
+            },
+            cargo = {
+                loadOutDirsFromCheck = true
+            },
+            procMacro = {
+                enable = true
+            },
+        }
+    }
+})
+
+local opts = {
+  tools = {
+    autoSetHints = true,
+    hover_with_actions = true,
+    runnables = {
+      use_telescope = true
+    },
+    inlay_hints = {
+      show_parameter_hints = false,
+      parameter_hints_prefix = "",
+      other_hints_prefix = "",
+    },
+  },
+
+  -- all the opts to send to nvim-lspconfig
+  -- these override the defaults set by rust-tools.nvim
+  -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
+  server = {
+    -- on_attach is a callback called when the language server attachs to the buffer
+    -- on_attach = on_attach,
+    settings = {
+      -- to enable rust-analyzer settings visit:
+      -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+      ["rust-analyzer"] = {
+        -- enable clippy on save
+        checkOnSave = {
+          command = "clippy"
+        },
+      }
+    }
+  },
+}
+
+require('rust-tools').setup(opts)
