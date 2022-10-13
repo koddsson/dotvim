@@ -55,7 +55,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 
 -- Set up LSP servers
 local on_attach = function(client, bufnr)
-  client.resolved_capabilities.document_formatting = true
+  client.server_capabilities.document_formatting = true
 
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local opts = { noremap=true, silent=true }
