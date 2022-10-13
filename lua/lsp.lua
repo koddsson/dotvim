@@ -87,15 +87,15 @@ nvim_lsp.tsserver.setup {
   },
 }
 
-nvim_lsp.denols.setup {
-  on_attach = on_attach,
-  root_dir = nvim_lsp.util.root_pattern(".deno"),
-  init_options = {
-    enabled = true,
-    lint = true,
-    unstable = true,
-  },
-}
+-- nvim_lsp.denols.setup {
+--   on_attach = on_attach,
+--   root_dir = nvim_lsp.util.root_pattern(".deno"),
+--   init_options = {
+--     enabled = true,
+--     lint = true,
+--     unstable = true,
+--   },
+-- }
 
 local on_attach = function(client)
     require'completion'.on_attach(client)
@@ -122,7 +122,6 @@ nvim_lsp.rust_analyzer.setup({
 local opts = {
   tools = {
     autoSetHints = true,
-    hover_with_actions = true,
     runnables = {
       use_telescope = true
     },
