@@ -81,6 +81,10 @@ nvim_lsp.tsserver.setup {
   },
 }
 
+nvim_lsp.sorbet.setup {
+  cmd = { "bin/srb", "tc", "--lsp" }
+}
+
 -- nvim_lsp.denols.setup {
 --   on_attach = on_attach,
 --   root_dir = nvim_lsp.util.root_pattern(".deno"),
