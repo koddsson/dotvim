@@ -95,6 +95,13 @@ nvim_lsp.sorbet.setup {
 --   },
 -- }
 
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+nvim_lsp.jsonls.setup {
+  capabilities = capabilities,
+}
+
+
 local on_attach = function(client)
     require'completion'.on_attach(client)
 end
