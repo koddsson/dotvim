@@ -12,4 +12,8 @@ require('lsp')
 
 -- Configure treesitter
 local ts = require 'nvim-treesitter.configs'
-ts.setup {ensure_installed = {'rust', 'typescript', 'javascript', 'css', 'ruby'}, highlight = {enable = true}}
+ts.setup {
+  ensure_installed = "all",
+  auto_install = true,
+  highlight = {enable = true}
+}
